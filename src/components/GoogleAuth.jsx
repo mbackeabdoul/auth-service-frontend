@@ -15,7 +15,7 @@ function GoogleAuth() {
 
         console.log("User info received:", userInfo.data);
 
-        const backendRes = await axios.post('http://localhost:5000/api/auth/google-signup', {
+        const backendRes = await axios.post('https://auth-service-backend.onrender.com/api/auth/google-signup', {
           email: userInfo.data.email,
           firstName: userInfo.data.given_name,
           lastName: userInfo.data.family_name,

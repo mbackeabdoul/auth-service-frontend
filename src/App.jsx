@@ -7,7 +7,15 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<AuthForm />} />
+        {/* Rediriger si déjà connecté */}
+        <Route 
+          path="/login" 
+          element={
+            localStorage.getItem('token') 
+              ? <Navigate to="/dashboard" replace /> 
+              : <AuthForm />
+          } 
+        />
         <Route 
           path="/dashboard" 
           element={
@@ -17,6 +25,8 @@ function App() {
           } 
         />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Attraper toutes les autres routes */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Router>
   );

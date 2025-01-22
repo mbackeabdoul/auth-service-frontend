@@ -24,7 +24,7 @@ const AuthForm = () => {
         );
         console.log("Google User Info:", userInfo.data);
 
-        const backendResponse = await axios.post('https://auth-service-backend.onrender.com/api/auth/google-signup', {
+        const backendResponse = await axios.post('http://localhost:5000/api/auth/google-signup', {
           email: userInfo.data.email,
           firstName: userInfo.data.given_name,
           lastName: userInfo.data.family_name,
@@ -56,7 +56,7 @@ const AuthForm = () => {
 
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      const response = await axios.post(`https://auth-service-backend.onrender.com/api/auth/${endpoint}`, formData);
+      const response = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, formData);
       
       localStorage.setItem('token', response.data.token);
       setSuccess(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');

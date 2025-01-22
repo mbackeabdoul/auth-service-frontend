@@ -3,7 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
 function GoogleAuth() {
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
         const userInfo = await axios.get(
@@ -12,24 +12,45 @@ function GoogleAuth() {
             headers: { Authorization: `Bearer ${response.access_token}` }
           }
         );
-
-        console.log("User info received:", userInfo.data);
-
-        const backendRes = await axios.post('https://auth-service-backend.onrender.com/api/auth/google-signup', {
+  
+        console.log("Tentative d'envoi au backend:", {
           email: userInfo.data.email,
           firstName: userInfo.data.given_name,
           lastName: userInfo.data.family_name,
           googleId: userInfo.data.sub
         });
-
-        localStorage.setItem('token', backendRes.data.token);
-        console.log('Connexion réussie!');
+  
+        const backendResponse = await axios.post(
+          'http://localhost:5000/api/auth/google-signup',
+          {
+            email: userInfo.data.email,
+            firstName: userInfo.data.given_name,
+            lastName: userInfo.data.family_name,
+            googleId: userInfo.data.sub
+          }
+        );
+  
+        if (backendResponse.data.token) {
+          localStorage.setItem('token', backendResponse.data.token);
+          setSuccess('Connexion Google réussie!');
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 2000);
+        } else {
+          throw new Error('Token non reçu du backend');
+        }
+  
       } catch (error) {
-        console.error('Erreur détaillée:', error.response?.data || error.message);
+        console.error('Erreur complète:', error);
+        setError(
+          error.response?.data?.message || 
+          'Erreur lors de la connexion avec Google'
+        );
       }
     },
     onError: (error) => {
-      console.error('Erreur de connexion Google:', error);
+      console.error('Erreur login Google:', error);
+      setError('Échec de la connexion avec Google');
     }
   });
 

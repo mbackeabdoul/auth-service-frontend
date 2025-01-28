@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,6 +13,7 @@ const AuthForm = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
@@ -33,9 +35,9 @@ const AuthForm = () => {
 
         localStorage.setItem('token', backendResponse.data.token);
         setSuccess('Connexion Google réussie!');
-        // Redirection après 2 secondes
+        // Utiliser navigate pour rediriger
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          navigate('/dashboard');
         }, 2000);
 
       } catch (error) {
@@ -46,7 +48,8 @@ const AuthForm = () => {
     onError: (error) => {
       console.error('Erreur Google:', error);
       setError('Échec de la connexion Google');
-    }
+    },
+    redirectUri: 'https://jade-faun-d9c6a4.netlify.app/login'  // Spécifiez l'URL de redirection ici
   });
 
   const handleSubmit = async (e) => {
@@ -61,9 +64,9 @@ const AuthForm = () => {
       localStorage.setItem('token', response.data.token);
       setSuccess(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');
       
-      // Redirection après 2 secondes
+      // Utiliser navigate pour rediriger
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        navigate('/dashboard');
       }, 2000);
 
     } catch (error) {

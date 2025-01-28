@@ -8,9 +8,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');  // Si le token est absent, redirige vers la page de login
+      return;  // Sortir de l'effet pour ne pas essayer de charger les données
+    }
+
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:5000/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -18,7 +23,7 @@ const Dashboard = () => {
       } catch (error) {
         console.error('Erreur:', error);
         if (error.response?.status === 401) {
-          handleLogout();
+          handleLogout();  // Si le token est invalide, déconnexion
         }
       } finally {
         setLoading(false);
@@ -26,12 +31,13 @@ const Dashboard = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate]);  // Ajout de `navigate` dans les dépendances pour garantir qu'il reste cohérent
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    navigate('/login');  // Redirection après déconnexion
   };
+  
 
   if (loading) {
     return (

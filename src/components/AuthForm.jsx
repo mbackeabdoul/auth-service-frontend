@@ -24,9 +24,9 @@ const AuthForm = () => {
             headers: { Authorization: `Bearer ${response.access_token}` }
           }
         );
-        console.log("Google User Info:", userInfo.data);
-
-        const backendResponse = await axios.post('http://localhost:5000/api/auth/google-signup', {
+        
+        // Ici on utilise l'URL de l'API depuis les variables d'environnement
+        const backendResponse = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/google-signup`, {
           email: userInfo.data.email,
           firstName: userInfo.data.given_name,
           lastName: userInfo.data.family_name,
@@ -35,7 +35,6 @@ const AuthForm = () => {
 
         localStorage.setItem('token', backendResponse.data.token);
         setSuccess('Connexion Google réussie!');
-        // Utiliser navigate pour rediriger
         setTimeout(() => {
           navigate('/dashboard');
         }, 2000);
@@ -49,7 +48,7 @@ const AuthForm = () => {
       console.error('Erreur Google:', error);
       setError('Échec de la connexion Google');
     },
-    redirectUri: 'https://jade-faun-d9c6a4.netlify.app/login'  // Spécifiez l'URL de redirection ici
+    redirectUri: 'https://jade-faun-d9c6a4.netlify.app/login'
   });
 
   const handleSubmit = async (e) => {
@@ -59,12 +58,11 @@ const AuthForm = () => {
 
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      const response = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, formData);
+      // Ici aussi on utilise l'URL de l'API depuis les variables d'environnement
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/${endpoint}`, formData);
       
       localStorage.setItem('token', response.data.token);
       setSuccess(isLogin ? 'Connexion réussie!' : 'Inscription réussie!');
-      
-      // Utiliser navigate pour rediriger
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
